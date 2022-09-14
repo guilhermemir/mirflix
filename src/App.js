@@ -9,19 +9,21 @@ const API_URL = 'https://www.omdbapi.com?apikey=38867bba'
 const App = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [movies, setMovies] = useState([]);
-
-    useEffect(() => {
-      searchCurrentTerm();
-    }, []);
+    const [lastSearchTerm, setLastSearchTerm] = useState('');
 
     const searchCurrentTerm = () => {
       searchMovies(searchTerm);
     }
 
+    useEffect(() => {
+      searchCurrentTerm('');
+    }, []);
+
     const searchMovies = async (title) => {
         const response = await fetch(`${API_URL}&s=${title}`);
         const data = await response.json();
         setMovies(data.Search);
+        setLastSearchTerm(title);
     }
 
     return (
@@ -40,11 +42,11 @@ const App = () => {
                 searchCurrentTerm();
               }
              } }
-            placeholder="Busque por um filme..."
+            placeholder="Search for a movie..."
           />
           <img
             src={SearchIcon}
-            alt="Buscar"
+            alt="Search"
             onClick={() => searchCurrentTerm()}
           />
         </div>
@@ -59,15 +61,11 @@ const App = () => {
               }
             </div>
           ) : (
-            searchTerm === '' ? (
+            lastSearchTerm !== '' ? (
               <div className="empty">
-                <h2>Procure por um filme :)</h2>
+                <h2><em>{lastSearchTerm}</em> not found.</h2>
               </div>
-            ) : (
-              <div className="empty">
-                <h2>Nenhum filme encontrado chamado <em>{searchTerm}</em>.</h2>
-              </div>
-            )
+            ) : null
           )
         }
       </div>
